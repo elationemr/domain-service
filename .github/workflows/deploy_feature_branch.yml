@@ -25,7 +25,7 @@ jobs:
         id: extract_branch
       
       - name: Show branch
-        run: echo "${{ steps.extract_branch.outputs.branch }}""
+        run: echo "${{ steps.extract_branch.outputs.branch }}"
 
 
       - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
