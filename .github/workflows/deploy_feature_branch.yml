@@ -31,10 +31,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
       
-      - name: Configure Kubectl
+      - name: Kubectl
         id: configure_kubectl
-        run: aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
-
-      - name: Get Pods
-        id: get_pods
-        run: kubectl get pods
+        run: |
+          aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+          kubectl get pods
