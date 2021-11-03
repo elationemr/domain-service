@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    branches: ['feature/*']
+
+jobs:
+  deploy:
+    env:
+      SERVICE_KEY: domain-service
+      REGION: us-west-2
+      CLUSTER: hackathon-microservices
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
+        id: build-and-push-image
+        with:
+          ecr-repository: ${{ env.SERVICE_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure CI credentials
+        id: configure_init_creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Configure Kubectl
+        id: configure_kubectl
+        run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+
+      - name: Get Pods
+        id: get_pods
+        run: kubectl get pods
