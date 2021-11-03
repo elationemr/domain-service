@@ -21,7 +21,7 @@ jobs:
           ecr-repository: ${{ env.SERVICE_KEY }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ env.REGION }}
 
       - name: Configure CI credentials
         id: configure_init_creds
@@ -29,11 +29,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ env.REGION }}
       
       - name: Configure Kubectl
         id: configure_kubectl
-        run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+        run: aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
 
       - name: Get Pods
         id: get_pods
