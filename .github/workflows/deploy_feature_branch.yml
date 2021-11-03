@@ -50,6 +50,8 @@ jobs:
       - name: Helm Install
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm install . -n ${{ env.NAMESPACE }} --generate-name --set image.tag=${{ steps.extract_branch.outputs.branch }}
+          exec: |
+            cd chart
+            helm install . -n ${{ env.NAMESPACE }} --generate-name --set image.tag=${{ steps.extract_branch.outputs.branch }}
           kubeconfig: '${{ steps.configure_kubectl.outputs.kubeconfig }}'
 
