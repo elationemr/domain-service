@@ -10,6 +10,7 @@ jobs:
       SERVICE_KEY: domain-service
       REGION: us-west-2
       CLUSTER: hackathon-microservices
+      NAMESPACE: test
     name: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -23,17 +24,14 @@ jobs:
           clean=${no_slash//-/_}
           echo "::set-output name=branch::$clean"
         id: extract_branch
-      
-      - name: Show branch
-        run: echo "${{ steps.extract_branch.outputs.branch }}"
 
-      # - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
-      #   id: build-and-push-image
-      #   with:
-      #     ecr-repository: ${{ env.SERVICE_KEY }}
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ env.REGION }}
+      - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
+        id: build-and-push-image
+        with:
+          ecr-repository: ${{ env.SERVICE_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
 
       - name: Configure CI credentials
         id: configure_init_creds
@@ -45,8 +43,13 @@ jobs:
       
       - name: Configure Kubectl
         id: configure_kubectl
-        run: aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
-      
-      - name: Get KubeConfig
-        id: get_kubeconfig
-        run: cat ~/.kube/config
+        run: |
+          aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+          echo "::set-output name=kubeconfig::$(cat ~/.kube/config)"
+
+      - name: Helm Install
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm install . -n ${{ env.NAMESPACE }} --generate-name --set image.tag=${{ steps.extract_branch.outputs.branch }}
+          kubeconfig: '${{ steps.configure_kubectl.outputs.kubeconfig }}'
+
