@@ -15,6 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Extract normalized branch
+        shell: bash
+        run: |
+          raw=${GITHUB_REF#refs/heads/}
+          no_slash=${raw//\//_}
+          clean=${no_slash//-/_}
+          echo "::set-output name=branch::$clean"
+        id: extract_branch
+      
+      - name: Show branch
+        run: echo "${{ steps.extract_branch.outputs.branch }}""
+
+
       - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
         id: build-and-push-image
         with:
@@ -31,8 +44,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
       
-      - name: Kubectl
+      - name: Configure Kubectl
         id: configure_kubectl
-        run: |
-          aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
-          kubectl get pods
+        run: aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+      
+      - name: Get Pods
+        id: get_pods
+        run: kubectl get pods
