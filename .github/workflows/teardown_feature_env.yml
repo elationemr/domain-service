@@ -19,7 +19,7 @@ jobs:
       - name: Extract normalized branch
         shell: bash
         run: |
-          raw=${GITHUB_REF#refs/heads/}
+          raw="${{ github.head_ref }}""
           no_slash=${raw//\//-}
           clean=${no_slash//_/-}
           echo "::set-output name=branch::$clean"
