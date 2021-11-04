@@ -13,7 +13,7 @@ spec:
         prefix: /domain-service/
     - uri:
         prefix: /domain-service
-    - rewrite:
+    rewrite:
         uri: "/"
     route:
     - destination:
