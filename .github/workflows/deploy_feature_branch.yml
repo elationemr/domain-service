@@ -10,7 +10,6 @@ jobs:
       SERVICE_KEY: domain-service
       REGION: us-west-2
       CLUSTER: hackathon-microservices
-      NAMESPACE: test
     name: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +46,18 @@ jobs:
           aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
           echo "::set-output name=kubeconfig::$(cat ~/.kube/config)"
 
+      - name: Setup Namespace
+        id: setup_namespace
+        run: |
+          namespace=${{ env.SERVICE_KEY }}-${{ steps.extract_branch.outputs.branch }}
+          kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
+          echo "::set-output name=namespace::$namespace"
+
       - name: Helm Install
         id: helm_install
         working-directory: chart
-        run: helm upgrade ${{ steps.extract_branch.outputs.branch }} . -n ${{ env.NAMESPACE }} --set image.tag=${{ steps.build-and-push-image.outputs.image_tag }} --install
-
+        run: |
+          helm upgrade ${{ steps.extract_branch.outputs.branch }} . \
+            -n ${{ steps.setup_namespace.outputs.namespace }} \
+            --set image.tag=${{ steps.build-and-push-image.outputs.image_tag }} \
+            --install
