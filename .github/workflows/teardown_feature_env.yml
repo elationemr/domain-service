@@ -1,7 +1,9 @@
 name: Teardown Feature Environment
+
 on:
   pull_request:
     types: [closed]
+
 jobs:
   teardown:
     if: github.event.pull_request.merged == true
