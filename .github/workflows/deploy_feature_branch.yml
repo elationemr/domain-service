@@ -2,10 +2,9 @@ name: Deploy Feature Branch
 
 on:
   workflow_dispatch:
-    branches: ['feature/*']
+    branches: ['feature/**']
   push:
-    branches:
-      - "feature/**"
+    branches: ['feature/**']
 
 jobs:
   deploy:
