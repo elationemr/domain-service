@@ -22,7 +22,7 @@ jobs:
           raw="${{ github.head_ref }}"
           no_slash=${raw//\//-}
           clean=${no_slash//_/-}
-          namespace=${{ env.SERVICE_KEY }}-${{ steps.extract_branch.outputs.branch }}
+          namespace=${{ env.SERVICE_KEY }}-$clean
           echo "::set-output name=namespace::$namespace"
         id: get_namespace
 
