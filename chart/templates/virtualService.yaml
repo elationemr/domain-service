@@ -6,7 +6,7 @@ spec:
   hosts:
   - "*"
   gateways:
-  - cory.my-gateway
+  - {{ include "chart.fullname" . }}-gateway
   http:
   - match:
     - uri:
