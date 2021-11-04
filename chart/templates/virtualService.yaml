@@ -6,7 +6,7 @@ spec:
   hosts:
   - "*"
   gateways:
-  - my-gateway
+  - cory.my-gateway
   http:
   - match:
     - uri:
