@@ -23,7 +23,7 @@ jobs:
           echo "::set-output name=branch::$clean"
         id: extract_branch
 
-      - uses: @cumulusds@v0.0.0
+      - uses: CumulusDS/get-yaml-paths-action@v0.0.0
         id: config
         with:
           file: config.yaml
