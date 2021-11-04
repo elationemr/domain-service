@@ -3,7 +3,6 @@ name: Teardown Feature Environment
 on:
   pull_request:
     types: [closed]
-    branches: ['feature/**']
 
 jobs:
   teardown:
