@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: {{ include "chart.fullname" . }}
   labels:
+    app: domain-service
+    version: v1
     {{- include "chart.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
@@ -39,11 +41,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: "/status"
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: "/"
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
