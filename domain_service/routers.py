@@ -8,7 +8,7 @@ def setup_routes(app: FastAPI):
     as a new app.include_router() call."""
     app.include_router(
         api.router,
-        prefix="domain-service",
+        prefix="",
         tags=["api"]
     )
 

@@ -12,7 +12,7 @@ def get_status():
     return PlainTextResponse(status_code=200, content="OK")
 
 @router.get(
-    "/",
+    "domain-service/",
     description="Get root."
 )
 def get_status():
