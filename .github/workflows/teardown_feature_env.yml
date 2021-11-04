@@ -1,6 +1,8 @@
 name: Teardown Feature Environment
 
 on:
+  workflow_dispatch:
+    branches: ['feature/**']
   pull_request:
     types: [closed]
 
