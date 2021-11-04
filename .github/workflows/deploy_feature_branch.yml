@@ -49,7 +49,7 @@ jobs:
       - name: Setup Namespace
         id: setup_namespace
         run: |
-          namespace=${{ steps.extract_branch.outputs.branch }}
+          namespace=${{ env.SERVICE_KEY }}-${{ steps.extract_branch.outputs.branch }}
           kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
           echo "::set-output name=namespace::$namespace"
 
