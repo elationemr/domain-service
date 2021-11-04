@@ -1,0 +1,6 @@
+namespace: dev-domain-service
+
+images:
+ - name: dev-domain-service
+   newName: 303970654249.dkr.ecr.us-west-2.amazonaws.com/domain-service
+   newTag: dev
