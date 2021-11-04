@@ -53,9 +53,8 @@ jobs:
         id: setup_namespace
         run: |
           namespace=${{ env.SERVICE_KEY }}-${{ steps.extract_branch.outputs.branch }}
-          kubectl create namespace $namespace --dry-run=client -o yaml | \
-            sed  '/^metadata:/a\ \ labels: {"istio-injection":"enabled"}' | \ 
-            kubectl apply -f -
+          kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
+          kubectl label namespaces $namespace istio-injection=enabled --overwrite=true
           echo "::set-output name=namespace::$namespace"
 
       - name: Helm Install
