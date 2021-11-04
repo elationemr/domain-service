@@ -2,17 +2,12 @@ name: Deploy Feature Branch
 
 on:
   workflow_dispatch:
-    branches: ['feature/*']
+    branches: ['feature/**']
   push:
-    branches:
-      - "feature/**"
+    branches: ['feature/**']
 
 jobs:
   deploy:
-    env:
-      SERVICE_KEY: domain-service
-      REGION: us-west-2
-      CLUSTER: hackathon-microservices
     name: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -27,13 +22,21 @@ jobs:
           echo "::set-output name=branch::$clean"
         id: extract_branch
 
+      - uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        id: config
+        with:
+          file: config.yaml
+          region: deployments.feature_branches.region
+          cluster: deployments.feature_branches.cluster
+          service_key: service_key
+
       - uses: elationemr/github-actions/deployment/build-and-push-to-ecr@main
         id: build-and-push-image
         with:
-          ecr-repository: ${{ env.SERVICE_KEY }}
+          ecr-repository: ${{ steps.config.outputs.service_key }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.REGION }}
+          aws-region: ${{ steps.config.outputs.region }}
 
       - name: Configure CI credentials
         id: configure_init_creds
@@ -41,18 +44,18 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.REGION }}
+          aws-region: ${{ steps.config.outputs.region }}
       
       - name: Configure Kubectl
         id: configure_kubectl
         run: |
-          aws eks --region ${{ env.REGION }} update-kubeconfig --name ${{ env.CLUSTER }}
+          aws eks --region ${{ steps.config.outputs.region }} update-kubeconfig --name ${{ steps.config.outputs.cluster }}
           echo "::set-output name=kubeconfig::$(cat ~/.kube/config)"
 
       - name: Setup Namespace
         id: setup_namespace
         run: |
-          namespace=${{ env.SERVICE_KEY }}-${{ steps.extract_branch.outputs.branch }}
+          namespace=${{ steps.config.outputs.service_key }}-${{ steps.extract_branch.outputs.branch }}
           kubectl create namespace $namespace --dry-run=client -o yaml | kubectl apply -f -
           kubectl label namespaces $namespace istio-injection=enabled --overwrite=true
           echo "::set-output name=namespace::$namespace"
