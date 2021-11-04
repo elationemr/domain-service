@@ -26,6 +26,7 @@ jobs:
           echo "::set-output name=namespace::$namespace"
         id: get_namespace
 
+
       - name: Configure CI credentials
         id: configure_init_creds
         uses: aws-actions/configure-aws-credentials@v1
