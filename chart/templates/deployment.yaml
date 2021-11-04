@@ -12,8 +12,8 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-        app: domain-service
-        version: v1
+      app: domain-service
+      version: v1
       {{- include "chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
